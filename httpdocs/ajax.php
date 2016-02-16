@@ -61,8 +61,182 @@
 		case 'forgotPassword';
 			$email = $_REQUEST['u_email'];			
 			forgotPassword($email);			
-		break;			
+		break;
+		case 'changePassword';
+			$oldPassword = $_REQUEST['oldPassword'];
+			$newPassword = $_REQUEST['newPassword'];
+			$newPasswordRepeat = $_REQUEST['newPasswordRepeat'];			
+			changePassword($oldPassword, $newPassword, $newPasswordRepeat);			
+		break;
+		case 'editInfo';
+			$firstName = $_REQUEST['firstName'];
+			$lastName = $_REQUEST['lastName'];
+			$gender = $_REQUEST['gender'];
+			$birthday = $_REQUEST['birthday'];
+			$country = $_REQUEST['country'];
+			$zip = $_REQUEST['zip'];			
+			editInfo($firstName, $lastName, $gender, $birthday, $country, $zip);			
+		break;		
 	}
+	
+	function editInfo($firstName, $lastName, $gender, $birthday, $country, $zip){
+		global $db;
+		session_start();
+		$errorList = '';
+		$firstError = true;
+		
+		if (strlen($firstName)==0 || strlen($lastName)==0 || strlen($gender)==0 || strlen($birthday)==0 || strlen($country)==0 || strlen($zip)==0){			
+			if($firstError){
+				$errorList .= 'Please fill all the required fields!';
+				$firstError = false;	
+			} else {
+				$errorList .= '<br />Please fill all the required fields!';
+			}					
+		}
+		
+		if (strlen($firstName)<3 || strlen($firstName)>100){			
+			if($firstError){
+				$errorList .= 'Firstname must between 3-100 characters!';
+				$firstError = false;	
+			} else {
+				$errorList .= '<br />Firstname must between 3-100 characters!';
+			}
+		}
+		if (strlen($lastName)<3 || strlen($lastName)>50){			
+			if($firstError){
+				$errorList .= 'Lastname must between 3-50 characters!!';
+				$firstError = false;	
+			} else {
+				$errorList .= '<br />Lastname must between 3-50 characters!!';
+			}
+		}
+		
+		if ($firstError == false){
+			returnError($errorList);
+		}
+		
+		
+		$sql = "UPDATE user SET u_firstname=:u_firstname, u_lastname=:u_lastname, u_gender=:u_gender, u_birthday=:u_birthday, u_country=:u_country, u_zip=:u_zip WHERE u_id=:u_id"; 			
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam(':u_firstname', $firstName, PDO::PARAM_STR);
+		$stmt->bindParam(':u_lastname', $lastName, PDO::PARAM_STR);
+		$stmt->bindParam(':u_gender', $gender, PDO::PARAM_STR);
+		$stmt->bindParam(':u_birthday', $birthday, PDO::PARAM_STR);
+		$stmt->bindParam(':u_country', $country, PDO::PARAM_STR);
+		$stmt->bindParam(':u_zip', $zip, PDO::PARAM_INT);
+		$stmt->bindParam(':u_id', $_SESSION['user']->u_id, PDO::PARAM_INT);
+		$stmt->execute();
+		$total = $stmt->rowCount();
+		
+		
+		if($total == 1){
+			$_SESSION['user']->u_firstname = $firstName;
+			$_SESSION['user']->u_lastname = $lastName;
+			$_SESSION['user']->u_gender = $gender;
+			$_SESSION['user']->u_birthday = $birthday;
+			$_SESSION['user']->u_country = $country;
+			$_SESSION['user']->u_zip = $zip;
+			$result['status'] = 'success';
+			$result['msg'] = 'Your info successfully changed.';	
+			echo json_encode($result);
+			exit;
+		} else {
+			$result['status'] = 'error';
+			echo json_encode($result);
+			exit;
+		}
+	}
+	
+	function changePassword($oldPassword, $newPassword, $newPasswordRepeat){
+		global $db;
+		session_start();
+		$errorList = '';
+		$firstError = true;
+		
+		if (strlen($oldPassword)==0 || strlen($newPassword)==0 || strlen($newPasswordRepeat)==0){			
+			if($firstError){
+				$errorList .= 'Please fill all the required fields!';
+				$firstError = false;	
+			} else {
+				$errorList .= '<br />Please fill all the required fields!';
+			}					
+		}
+		
+		if($firstError == false){
+			returnError($errorList);
+		}
+		
+		$sql = "SELECT * FROM user WHERE u_id=:u_id LIMIT 1"; 
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam(':u_id', $_SESSION['user']->u_id, PDO::PARAM_STR);
+		$stmt->execute();   
+		$obj  = $stmt->fetchObject();
+		$total = $stmt->rowCount();
+		
+		if ($oldPassword !== $obj->u_password){
+			if($firstError){
+				$errorList .= 'Password is wrong!';
+				$firstError = false;	
+			} else {
+				$errorList .= '<br />Password is wrong!';
+			}
+		}
+		
+		if($firstError == false){
+			returnError($errorList);
+		}
+		
+		if (strlen($newPassword)<6 || strlen($newPassword)>24 || strlen($newPasswordRepeat)<6 || strlen($newPasswordRepeat)>24){			
+			if($firstError){
+				$errorList .= 'Password must between 6-24 characters!!';
+				$firstError = false;	
+			} else {
+				$errorList .= '<br />Password must between 6-24 characters!!';
+			}
+		}
+		
+		if ($newPassword !== $newPasswordRepeat){			
+			if($firstError){
+				$errorList .= 'Passwords does not match!';
+				$firstError = false;	
+			} else {
+				$errorList .= '<br />Passwords does not match!';
+			}
+		}
+		
+		if ($newPassword == $oldPassword){			
+			if($firstError){
+				$errorList .= 'You are already using this password!';
+				$firstError = false;	
+			} else {
+				$errorList .= '<br />You are already using this password!';
+			}
+		}
+		
+		if($firstError == false){
+			returnError($errorList);
+		}
+		
+		$sql = "UPDATE user SET u_password=:u_password WHERE u_id=:u_id"; 			
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam(':u_password', $newPassword, PDO::PARAM_STR);
+		$stmt->bindParam(':u_id', $_SESSION['user']->u_id, PDO::PARAM_INT);
+		$stmt->execute();
+		$total = $stmt->rowCount();
+		
+		if($total == 1){
+			$result['status'] = 'success';
+			$result['msg'] = 'Your password successfully changed.';			
+			echo json_encode($result);
+			exit;
+		} else {
+			$result['status'] = 'error';
+			echo json_encode($result);
+			exit;
+		}
+		
+	}
+	
 	function forgotPassword($email){
 		global $db;
 		$errorList = '';

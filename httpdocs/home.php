@@ -347,7 +347,7 @@
 							<label for="inputPassword" class="col-sm-3 control-label">Weight</label>
 							<div class="col-sm-8">
 								<div class="input-group">
-								  <input placeholder="pounds" id="weight" name="weight" type="number" step="0.1" class="form-control">
+								  <input placeholder="pounds" id="weight" value="<?php echo $dietStats->ds_weight; ?>"name="weight" type="number" step="0.1" class="form-control">
 								  <span class="input-group-addon">lbs</span>
 								</div>
 							</div>

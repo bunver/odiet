@@ -166,34 +166,79 @@
 							<div class="tab-content" style="width: 100%;">
 								<div class="tab-pane fade <?php echo $activeTab1; ?>" id="vtab1">
 									<h3 class="title">Edit My Info</h3>
-									<form class="form-horizontal">
+									<div id="errorDiv" class="alert alert-danger" style="display:none;"></div>
+									<div id="successDiv" class="alert alert-success" style="display:none;"></div>
+									<form class="form-horizontal" id="registerForm" method="POST" role="form">
 										<div class="form-group has-feedback">
-											<label for="inputUserName" class="col-sm-3 control-label">Old Password</label>
+											<label for="inputName" class="col-sm-3 control-label">First Name </label>
 											<div class="col-sm-8">
-												<input type="password" class="form-control" id="inputEmail" placeholder="Password" required="">
-												<i class="fa fa-lock form-control-feedback"></i>
+												<input value="<?php echo $_SESSION['user']->u_firstname; ?>" type="text" class="form-control" id="firstName" name="u_firstname" placeholder="First Name" required maxlength="100" pattern=".{3,100}">
 											</div>
 										</div>
 										<div class="form-group has-feedback">
-											<label for="inputPassword" class="col-sm-3 control-label">New Password</label>
+											<label for="inputLastName" class="col-sm-3 control-label">Last Name </label>
 											<div class="col-sm-8">
-												<input type="password" maxlength="24" class="form-control" id="inputPassword" placeholder="Password" required="">
-												<i class="fa fa-lock form-control-feedback"></i>
-											</div>
-										</div>
-										<div class="form-group has-feedback">
-											<label for="inputPassword" class="col-sm-3 control-label">New Password</label>
-											<div class="col-sm-8">
-												<input type="password" maxlength="24" class="form-control" id="inputPassword" placeholder="Password" required="">
-												<i class="fa fa-lock form-control-feedback"></i>
+												<input value="<?php echo $_SESSION['user']->u_lastname; ?>" type="text" class="form-control" id="lastName" name="u_lastname" placeholder="Last Name" required maxlength="50" pattern=".{3,50}">
 											</div>
 										</div>
 										<div class="form-group">
-											<div class="col-sm-offset-3 col-sm-8">											
-												<button type="button" id="login-bt" class="btn btn-group btn-default btn-animated">
-													<i class="fa fa-key"></i>
-													<span id="upload-span"> Change </span>	
-												</button>
+											<label for="inputEmail" class="col-sm-3 control-label">Gender </label>
+											<div class="col-sm-8">
+												<select class="form-control" name="gender" id="gender">
+													<option selected>Not Selected</option>
+													<option <?php if($_SESSION['user']->u_gender == 'Male'){echo 'selected';} ?>>Male</option>
+													<option <?php if($_SESSION['user']->u_gender == 'Female'){echo 'selected';} ?>>Female</option>
+													<option <?php if($_SESSION['user']->u_gender == 'LGBT'){echo 'selected';} ?>>LGBT</option>
+													<option <?php if($_SESSION['user']->u_gender == 'Other'){echo 'selected';} ?>>Other</option>
+												</select>
+											</div>
+										</div>
+										<div class="form-group">
+											<label for="inputName" class="col-sm-3 control-label">Birthday </label>
+											<div class="col-sm-8">
+												<input value="<?php echo $_SESSION['user']->u_birthday; ?>" type="date" class="form-control" id="birthday" name="birthday">
+											</div>
+										</div>
+										<div class="form-group">
+											<label for="inputLastName" class="col-sm-3 control-label">Country </label>
+											<div class="col-sm-8">
+												<select class="form-control" id="country" name="country">
+													<option selected>Not Selected</option>
+													<option <?php if($_SESSION['user']->u_country == 'US'){echo 'selected';} ?> value="US">United States</option>
+													<option <?php if($_SESSION['user']->u_country == 'CA'){echo 'selected';} ?> value="CA">Canada</option>
+													<option <?php if($_SESSION['user']->u_country == 'UK'){echo 'selected';} ?> value="UK">United Kingdom</option>
+													<option <?php if($_SESSION['user']->u_country == 'AU'){echo 'selected';} ?> value="AU">Australia</option>
+												</select>
+											</div>
+										</div>
+										
+										<div class="form-group" <?php if($_SESSION['user']->u_country != 'US'){echo 'style="display:none;"';} ?> id="zip-div">
+											<label for="inputLastName" class="col-sm-3 control-label">ZIP Code </label>
+											<div class="col-sm-8">
+												
+												<div class="input-group">
+												  <input value="<?php echo $_SESSION['user']->u_zip; ?>" type="number" class="form-control" id="zip" name="zip" maxlength="5" pattern=".{3,5}" />
+												  <span class="input-group-btn">
+													<button class="btn btn-default" type="button" style="margin-top:0px; height:40px;" id="zip-button">Check</button>
+												  </span>
+												</div><!-- /input-group -->
+											</div>
+										</div>
+										<div class="form-group" id="states-div" <?php if($_SESSION['user']->u_country != 'US'){echo 'style="display:none;"';} ?>>
+											<label for="inputLastName" class="col-sm-3 control-label">State </label>
+											<div class="col-sm-8">
+												<span class="form-control" id="state" name="state" />
+											</div>
+										</div>
+										<div class="form-group" id="city-div" <?php if($_SESSION['user']->u_country != 'US'){echo 'style="display:none;"';} ?>>
+											<label for="inputPassword" class="col-sm-3 control-label">City </label>
+											<div class="col-sm-8">
+												<span class="form-control" id="city" name="city" />
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-offset-3 col-sm-8">
+												<button type="button" class="btn btn-group btn-default btn-animated" id="edit-info-bt"> Change <i class="fa fa-arrow-right"></i></button>
 											</div>
 										</div>
 									</form>
@@ -372,6 +417,80 @@
 						} else if(data.status == 'success') {
 							$('#errorDiv').hide();
 							$('#successDiv').show();
+							$('#successDiv').html(data.msg);
+						}
+						
+					},
+					error: function(){
+
+					}
+				});
+			});
+			
+			$("#country").change(function(){
+				console.log($(this).val());
+				if($(this).val() == 'US'){
+					$('#zip-div').show();
+				} else {
+					$('#zip-div').hide();
+					$('#states-div').hide();
+					$('#city-div').hide();
+				}
+			});
+			$("#zip-button").click(function(){
+				console.log($('#zip').val());
+				$.ajax({
+					type: "POST",
+					url: "ajax.php",
+					data: "function=checkZIP&zip="+$('#zip').val(),
+					dataType: "json",
+					beforeSend: function() {
+						
+					},
+					complete: function() {
+						
+					},
+					success: function(data){			
+						if (data.status == 'error') {
+							$('#errorDiv').show();
+							$('#successDiv').hide();
+							$('#errorDiv').html(data.msg);
+						} else if(data.status == 'success') {
+							$('#errorDiv').hide();
+							$('#states-div').show();
+							$('#state').html(data.data.state);
+							$('#city-div').show();
+							$('#city').html(data.data.primary_city);
+						}
+						
+					},
+					error: function(){
+
+					}
+				});
+			});
+			
+			$("#edit-info-bt").click(function(){
+				$.ajax({
+					type: "POST",
+					url: "ajax.php",
+					data: "function=editInfo&firstName="+$('#firstName').val()+"&lastName="+$('#lastName').val()+"&gender="+$('#gender').val()+"&birthday="+$('#birthday').val()+"&country="+$('#country').val()+"&zip="+$('#zip').val(),
+					dataType: "json",
+					beforeSend: function() {
+
+					},
+					complete: function() {
+
+					},
+					success: function(data){			
+						if (data.status == 'error') {
+							$('#errorDiv').show();
+							$('#successDiv').hide();
+							$('#errorDiv').html(data.msg);
+						} else if(data.status == 'success') {
+							$('#errorDiv').hide();
+							$('#successDiv').show();
+							$('#successDiv').html(data.msg);
 						}
 						
 					},

@@ -1,0 +1,25 @@
+.file-btn  {
+	position: relative;
+}
+
+.cr-image{
+	max-width:none;
+}
+
+.file-btn input[type="file"] {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+}
+#pill2-2{
+	border: 1px solid #e1e1e1;
+	border-radius: 5px;
+	padding: 5px;
+}
+#preview-img-div{
+	width: 80%;
+    margin: 10px auto;
+}

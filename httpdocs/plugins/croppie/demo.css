@@ -1,0 +1,107 @@
+.glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+#myModal {
+	display: none;	
+}
+
+.file-btn  {
+    position: relative;
+}
+
+.cr-image{
+	max-width:none;
+}
+
+.file-btn input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+.upload-demo #upload-demo,
+.upload-demo .upload-result,
+.upload-demo.ready .upload-msg {
+    display: none;
+}
+.upload-demo.ready #upload-demo {
+    display: block;
+}
+.upload-demo.ready .upload-result {
+    display: inline-block;    
+}
+
+.upload-msg {
+    text-align: center;
+    padding: 50px;
+    font-size: 22px;
+    color: #aaa;
+    width: 260px;
+    margin: 50px auto;
+    border: 1px solid #aaa;
+}
+
+/* Sweet alert modifications */
+.sweet-alert {
+    width: auto;
+    max-width: 30%;
+	min-width: 30%;
+}
+
+/* Grid - subset */
+*, *:after, *:before {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+[class*='col-'] {
+	float: left;
+	padding-right: 20px; /* column-space */
+}
+
+.grid {
+	width: 100%;
+	max-width: 1140px;
+	min-width: 755px;
+	margin: 0 auto;
+	overflow: hidden;
+}
+.grid:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+@media handheld, only screen and (max-width: 767px) {
+    .grid {
+        width: 100%;
+        min-width: 0;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 20px; /* grid-space to left */
+        padding-right: 10px; /* grid-space to right: (grid-space-left - column-space) e.g. 20px-10px=10px */
+    }
+
+    [class*='col-'] {
+        width: auto;
+        float: none;
+        margin: 10px 0;
+        padding-left: 0;
+        padding-right: 10px; /* column-space */
+    }
+
+}
